@@ -1,0 +1,31 @@
+version: "3"
+services:
+  auscash:
+    image: twinkykms/australia-cash:explorer
+    restart: always
+    volumes:
+      - "chain_data:/root/.australiacash"
+    environment:
+      RPC_ALLOW_IP: "0.0.0.0/0"
+
+  mongo:
+    build: ./db
+    restart: always
+    environment:
+      MONGO_INITDB_DATABASE: explorer_database
+    volumes:
+      - "database_data:/data/db"
+
+  explorer:
+    build: ./aus-express
+    restart: always
+    ports:
+      - "80:3001"
+      - "443:3001"
+    depends_on:
+      - mongo
+      - auscash
+
+volumes:
+  chain_data:
+  database_data:
